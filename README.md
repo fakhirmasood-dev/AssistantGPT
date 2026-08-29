@@ -39,7 +39,7 @@ Database
 Installation
 </h2>
 <h3>Clone the repository</h3>
-<p>git clone https://github.com/fakhirmasood-dev/Assistant-GPT<br>
+<p>git clone https://github.com/fakhirmasood-dev/AssistantGPT<br>
 cd assistantgpt<p>
 
 <h3>Create a Virtual environment</h3>
