@@ -33,7 +33,12 @@ It has memory and chat history facility when user register also memory facility 
 Database
 </h3>
 <ul><li>PosgreSQL</li></ul>
+<h3>Home Page</h3><br>
 <img src="screenshots/screenshot.png" widht='200px' height='200px'>
+<h3>Register Page</h3><br>
+<img src="screenshots/register.png" widht='200px' height='200px'>
+<h3>Login Page</h3><br>
+<img src="screenshots/login.png" widht='200px' height='200px'>
 
 <h2>
 Installation
