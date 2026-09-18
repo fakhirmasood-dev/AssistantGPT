@@ -112,7 +112,7 @@ def home(request):
                 messages.append({'role':'user','content':prompt})
                 print(messages)
                 client=OpenAI(api_key=config('API_KEY'))
-                responses=client.chat.completions.create(model='gpt-5.4-mini',
+                responses=client.chat.completions.create(model='gpt-5-mini',
                                                     messages=messages,
                                                     temperature=0,
                                                     n=1,
@@ -292,4 +292,7 @@ def load_chat(request,chat_id):
 @ensure_csrf_cookie
 def url_chat(request,chat_id=None):
     return render(request,'assistant_gpt/home.html')
+
+def delete_chat(request):
+    return None
 
