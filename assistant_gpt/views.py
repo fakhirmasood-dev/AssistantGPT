@@ -294,5 +294,6 @@ def url_chat(request,chat_id=None):
     return render(request,'assistant_gpt/home.html')
 
 def delete_chat(request):
-    return None
+    data=json.loads(request.body)
+    print(data)
 
