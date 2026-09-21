@@ -295,5 +295,13 @@ def url_chat(request,chat_id=None):
 
 def delete_chat(request):
     data=json.loads(request.body)
+    # chat_id=data.chat_id
     print(data)
+    print(data['chat_id'])
+    chat_to_be_del=Chat.objects.filter(id=data['chat_id'])
+    print('here')
+    for c in chat_to_be_del:
+        c.deltion_flag=True
+        c.save()
+    return JsonResponse({'status':'ok'})
 

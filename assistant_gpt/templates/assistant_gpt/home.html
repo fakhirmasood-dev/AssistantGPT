@@ -591,9 +591,12 @@ deleteButton.onclick = async(e) => {
     e.stopPropagation();
 
     menu.classList.toggle("hidden");
-    const response=await fetch('/delete/',{
+    const response=await fetch('/assistantgpt/delete/',{
         'method':'POST',
-        headers:{'Content-Type':'application/json',},
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':getCSRF()
+        },
         body:JSON.stringify({'chat_id':c.id})
     },
     
