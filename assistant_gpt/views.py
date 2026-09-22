@@ -266,7 +266,7 @@ def create_chat(request):
 def chats(request):
     if request.user.is_authenticated:
         user=request.user
-        chats=Chat.objects.select_related('user').filter(user=user).values('id','title').order_by('-created_at')
+        chats=Chat.objects.select_related('user').filter(user=user,deltion_flag=0).values('id','title').order_by('-created_at')
        
         chats=list(chats)
         for c in chats:
@@ -303,5 +303,6 @@ def delete_chat(request):
     for c in chat_to_be_del:
         c.deltion_flag=True
         c.save()
+    messages.success(request,'Chat deleted successfully.')
     return JsonResponse({'status':'ok'})
 

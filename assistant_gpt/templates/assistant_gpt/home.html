@@ -11,13 +11,34 @@
 </head>
 
 <body class="bg-[#212121] text-white h-screen overflow-x-hidden">
-
+ {% if messages %}
+  <div class="fixed top-[72px] left-0 w-full flex justify-center z-60">
+    <div class="w-full max-w-5xl px-4">
+      {% for message in messages %}
+        <div class=" mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg
+          {% if message.tags == 'success' %}
+            bg-green-500/10 border-green-400/30 text-green-300
+          {% elif message.tags == 'error' %}
+            bg-red-500/10 border-red-400/30 text-red-300
+          {% elif message.tags == 'warning' %}
+            bg-yellow-400/10 border-yellow-300/30 text-yellow-200
+          {% else %}
+            bg-blue-500/10 border-blue-400/30 text-blue-300
+          {% endif %}
+        ">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
 <!-- OVERLAY (mobile sidebar background) -->
 <div id="overlay"
      class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
 <div class="flex h-screen overflow-hidden">
 {% block 'content' %}
+
 {% block 'sidebar' %}
 <!-- SIDEBAR -->
 <aside id="sidebar"
@@ -38,6 +59,7 @@
         + New Chat
     </button>
 </div>
+
 <!-- New Chat Modal -->
 <div id="newChatModal"
      class="hidden fixed inset-0 bg-black/50 z-50
@@ -75,7 +97,7 @@
 </div>
 
 <!-- chat list -->
-<div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
+<div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0 relative"></div>
  
 
     <!-- PROFILE (STAYS FIXED AT BOTTOM) -->
@@ -199,27 +221,6 @@
 
 </div>
 </div>
- {% if messages %}
-  <div class="fixed top-[72px] left-0 w-full flex justify-center z-40">
-    <div class="w-full max-w-5xl px-4">
-      {% for message in messages %}
-        <div class="mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg
-          {% if message.tags == 'success' %}
-            bg-green-500/10 border-green-400/30 text-green-300
-          {% elif message.tags == 'error' %}
-            bg-red-500/10 border-red-400/30 text-red-300
-          {% elif message.tags == 'warning' %}
-            bg-yellow-400/10 border-yellow-300/30 text-yellow-200
-          {% else %}
-            bg-blue-500/10 border-blue-400/30 text-blue-300
-          {% endif %}
-        ">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
 
 {% block 'mainarea' %}
 <!-- MESSAGES -->
