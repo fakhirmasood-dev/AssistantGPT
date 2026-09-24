@@ -41,6 +41,10 @@
     </div>
   </div>
 {% endif %}
+<!-- <div class="none top-[72px] left-0 w-full flex justify-center z-[100]" id="message">
+    <div class="w-full max-w-5xl px-4 bg-green-500/10 border-green-400/30 text-green-300">
+    </div>
+</div> -->
 <!-- SIDEBAR -->
 <aside id="sidebar"
        class="fixed lg:static z-50
@@ -603,6 +607,14 @@ deleteButton.onclick = async(e) => {
     },
     
 )
+    if(response.ok){
+        const chat_to_be_removed=document.querySelector(`[data-chat-id="${c.id}"]`);
+        console.log('chat removed');
+        console.log(chat_to_be_removed);
+        chat_to_be_removed.remove()
+        console.log(c.id)
+    
+    }
 
     // your delete logic here
 };
