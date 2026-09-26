@@ -306,3 +306,6 @@ def delete_chat(request):
     # messages.success(request,'Chat deleted successfully.')
     return JsonResponse({'status':'ok'})
 
+def pin_chat(request):
+    return JsonResponse({'status':'ok'})
+
