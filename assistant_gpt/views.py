@@ -301,11 +301,16 @@ def delete_chat(request):
     chat_to_be_del=Chat.objects.filter(id=data['chat_id'])
     print('here')
     for c in chat_to_be_del:
-        c.deltion_flag=True
+        c.is_deleted=True
         c.save()
     # messages.success(request,'Chat deleted successfully.')
     return JsonResponse({'status':'ok'})
 
 def pin_chat(request):
+    data=json.loads(request.body)
+    chat_id=data['chat_id']
+    chat_to_be_pinned=Chat.objects.filter(id=chat_id).first()
+    chat_to_be_pinned.is_pinned=True
+    chat_to_be_pinned.save()
     return JsonResponse({'status':'ok'})
 
