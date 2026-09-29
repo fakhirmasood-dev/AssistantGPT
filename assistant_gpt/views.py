@@ -266,7 +266,7 @@ def create_chat(request):
 def chats(request):
     if request.user.is_authenticated:
         user=request.user
-        chats=Chat.objects.select_related('user').filter(user=user,is_deleted=0).values('id','title').order_by('-created_at')
+        chats=Chat.objects.select_related('user').filter(user=user,is_deleted=0,is_pinned=0).values('id','title').order_by('-created_at')
        
         chats=list(chats)
         for c in chats:
