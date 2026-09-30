@@ -104,7 +104,12 @@
 </div>
 
 <!-- chat list -->
-<div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
+ <p class="px-4">Pinned</p>
+ <br>
+ <div id="pinned-chats" class=" overflow-y-auto px-2  min-h-0"></div>
+<p class="ps-4">Recents</p>
+
+ <div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
  
 
     <!-- PROFILE (STAYS FIXED AT BOTTOM) -->
@@ -513,11 +518,16 @@ overlay.addEventListener("click", () => {
 async function loadChats() {
 
     const res = await fetch("/assistantgpt/chats/");
+    const res2 = await fetch("/assistantgpt/load_pinned_chats/");
+    const data2 = await res2.json();
     const data = await res.json();
 
     const chatList = document.getElementById("chatList");
+    const pinned_chats=document.getElementById('pinned-chats');
 
     if (!chatList) return;
+    if (!pinned_chats) return;
+
 
     chatList.innerHTML = "";
 
@@ -584,6 +594,8 @@ menuButton.onclick = (e) => {
 
     menu.classList.toggle("hidden");
 };
+
+
 
 
 // Pin
@@ -690,6 +702,180 @@ menu.addEventListener('mouseleave',()=>{
         highlightSelectedChat(match[1]);
     }
 
+   //logic for pinned chats
+
+
+
+        // 🔥 if chats exist and not empty
+ if (data2 && Array.isArray(data2.chats) && data2.chats.length > 0) {
+
+        data2.chats.forEach(c => {
+
+            const div = document.createElement("div");
+
+div.className =
+    "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
+
+div.dataset.chatId = c.id;
+
+// Chat title
+div.innerText = c.title;
+
+
+// Three-dot button
+const menuButton = document.createElement("button");
+
+menuButton.className =
+    "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
+
+menuButton.innerHTML = `
+    <span class="text-lg leading-none">⋮</span>
+`;
+
+
+// Dropdown menu
+const menu = document.createElement("div");
+
+menu.className =
+    "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
+
+
+// Pin option
+const pinButton = document.createElement("button");
+
+pinButton.className =
+    "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
+
+pinButton.innerHTML = `
+    📌 <span class="ml-2">Pin</span>
+`;
+
+
+// Delete option
+const deleteButton = document.createElement("button");
+
+deleteButton.className =
+    "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
+
+deleteButton.innerHTML = `
+    <span>🗑️</span>
+    <span class="ml-2">Delete</span>
+`;
+
+
+// Prevent clicking the menu from loading the chat
+menuButton.onclick = (e) => {
+    e.stopPropagation();
+
+    menu.classList.toggle("hidden");
+};
+
+
+
+
+// Pin
+pinButton.onclick = async(e) => {
+    e.stopPropagation();
+    menu.classList.toggle("hidden");
+     const chat_to_be_removed_from_normal_chats=document.querySelector(`[data-chat-id="${c.id}"]`);
+     chat_to_be_removed_from_normal_chats.remove()
+    const response =await fetch('/assistantgpt/pin/',{
+        'method':'POST',
+        'headers':{
+            'Content-Type':'applicatin/json',
+            'X-CSRFToken':getCSRF()
+        },
+        body:JSON.stringify({'chat_id':c.id})
+    })
+
+    // your pin logic here
+};
+
+// Delete
+deleteButton.onclick = async(e) => {
+    e.stopPropagation();
+
+    menu.classList.toggle("hidden");
+    const response=await fetch('/assistantgpt/delete/',{
+        'method':'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':getCSRF()
+        },
+        body:JSON.stringify({'chat_id':c.id})
+    },
+    
+)
+    if(response.ok){
+        const chat_to_be_removed=document.querySelector(`[data-chat-id="${c.id}"]`);
+        chat_to_be_removed.remove()
+        menu.classList.toggle('hidden');
+        deletion_msg_container=document.getElementById('deletion_msg_container');
+        deletion_message=document.getElementById('deletion_msg');
+        console.log('deleted');
+        deletion_message.innerText='Chat deleted successfully.';
+        deletion_msg_container.classList.remove('hidden');
+        deletion_msg_container.classList.add('flex');
+        setTimeout(
+            ()=>{
+                deletion_msg_container.classList.add('hidden');
+            }
+        ,3000)
+    }
+
+    // your delete logic here
+};
+
+
+
+
+
+
+
+// Put buttons inside menu
+menu.appendChild(pinButton);
+menu.appendChild(deleteButton);
+
+
+// Put menu + three dots inside chat div
+div.appendChild(menuButton);
+div.appendChild(menu);
+
+
+// Load chat when clicking chat item
+div.onclick = () => loadChat(c.id);
+
+chatList.appendChild(div);
+menu.addEventListener('mouseleave',()=>{
+    menu.classList.toggle('hidden');
+    console.log('mouse laeved')
+    }
+)
+
+            
+
+        });
+
+    } else {
+
+        // 🔥 if no chats
+        const empty = document.createElement("div");
+
+        empty.className = "text-gray-500 text-sm px-3 py-2";
+
+        empty.innerText = "No pinned chats.";
+
+        chatList.appendChild(empty);
+    }
+
+      // After creating all chat divs
+    const match2 = window.location.pathname.match(
+        /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
+    );
+
+    if (match2) {
+        highlightSelectedChat(match[1]);
+    }
     
 }
 

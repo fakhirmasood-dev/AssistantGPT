@@ -270,8 +270,7 @@ def chats(request):
        
         chats=list(chats)
         for c in chats:
-            c['id']=str(c['id'])
-        print(chats)
+            c['id']=str(c['id'])    
         data={"chats":chats}
         return JsonResponse(data)
     
@@ -284,7 +283,7 @@ def load_chat(request,chat_id):
         chat=Chat.objects.filter(id=chat_id).first()
         chat=MessagesTable.objects.select_related('chat').filter(chat=chat).values('role','content').order_by('created_at')
         chat=list(chat)
-        print(chat)
+        chats=Chat.objects.select_related()
         return JsonResponse({'messages':chat})
     
     return render(request,'assistant_gpt/home.html',{'active_chat_id':chat_id})
@@ -296,8 +295,6 @@ def url_chat(request,chat_id=None):
 def delete_chat(request):
     data=json.loads(request.body)
     # chat_id=data.chat_id
-    print(data)
-    print(data['chat_id'])
     chat_to_be_del=Chat.objects.filter(id=data['chat_id'])
     print('here')
     for c in chat_to_be_del:
@@ -313,4 +310,14 @@ def pin_chat(request):
     chat_to_be_pinned.is_pinned=True
     chat_to_be_pinned.save()
     return JsonResponse({'status':'ok'})
+
+def load_pinned_chats(request):
+    chats=Chat.objects.filter(is_pinned=1).values('title','id').order_by('-created_at')
+    chats=list(chats)
+    for c in chats:
+        c['id']=str(c['id'])
+    print(chats)
+    data={"chats":chats}
+    return JsonResponse(data)
+
 
