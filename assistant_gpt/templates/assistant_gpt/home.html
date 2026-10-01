@@ -104,10 +104,14 @@
 </div>
 
 <!-- chat list -->
+ {% if user.is_authenticated %}
  <p class="px-4">Pinned</p>
+ {% endif %}
  <br>
  <div id="pinned-chats" class=" overflow-y-auto px-2  min-h-0"></div>
-<p class="ps-4">Recents</p>
+{% if user.is_authenticated %}
+ <p class="ps-4">Recents</p>
+ {% endif %}
 
  <div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
  
@@ -516,7 +520,7 @@ overlay.addEventListener("click", () => {
 
 /* LOAD CHATS INTO SIDEBAR */
 async function loadChats() {
-
+    if(IS_AUTHENTICATED){
     const res = await fetch("/assistantgpt/chats/");
     const res2 = await fetch("/assistantgpt/load_pinned_chats/");
     const data2 = await res2.json();
@@ -690,7 +694,7 @@ menu.addEventListener('mouseleave',()=>{
 
         empty.innerText = "Please login to retain chat history.";
 
-        chatList.appendChild(empty);
+        pinned_chats.appendChild(empty);
     }
 
       // After creating all chat divs
@@ -845,7 +849,7 @@ div.appendChild(menu);
 // Load chat when clicking chat item
 div.onclick = () => loadChat(c.id);
 
-chatList.appendChild(div);
+pinned_chats.appendChild(div);
 menu.addEventListener('mouseleave',()=>{
     menu.classList.toggle('hidden');
     console.log('mouse laeved')
@@ -859,13 +863,13 @@ menu.addEventListener('mouseleave',()=>{
     } else {
 
         // 🔥 if no chats
-        const empty = document.createElement("div");
+        const empty2 = document.createElement("div");
 
-        empty.className = "text-gray-500 text-sm px-3 py-2";
+        empty2.className = "text-gray-500 text-sm px-3 py-2";
 
-        empty.innerText = "No pinned chats.";
+        empty2.innerText = "No pinned chats.";
 
-        chatList.appendChild(empty);
+        pinned_chats.appendChild(empty2);
     }
 
       // After creating all chat divs
@@ -876,6 +880,7 @@ menu.addEventListener('mouseleave',()=>{
     if (match2) {
         highlightSelectedChat(match[1]);
     }
+}
     
 }
 
