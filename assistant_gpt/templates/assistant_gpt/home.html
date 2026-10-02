@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block 'title' %}AssistantGPT{% endblock 'title' %}</title>
-{% load custom_filters %}
 
-<script src="https://cdn.tailwindcss.com"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block 'title' %}AssistantGPT{% endblock 'title' %}</title>
+    {% load custom_filters %}
+
+    <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
 <body class="bg-[#212121] text-white h-screen overflow-x-hidden">
 
-<!-- OVERLAY (mobile sidebar background) -->
-<div id="overlay"
-     class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+    <!-- OVERLAY (mobile sidebar background) -->
 
-<div class="flex h-screen overflow-hidden">
-{% block 'content' %}
+    <div id="overlay" class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
-{% block 'sidebar' %}
- {% if messages %}
-  <div class="fixed top-[72px] left-0 w-full flex justify-center z-[100]" id="message">
-    <div class="w-full max-w-5xl px-4">
-      {% for message in messages %}
-        <div class=" mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg
+    <div class="flex h-screen overflow-hidden">
+        {% block 'content' %}
+
+        {% block 'sidebar' %}
+        {% if messages %}
+        <div class="fixed top-[72px] left-0 w-full flex justify-center z-[100]" id="message">
+            <div class="w-full max-w-5xl px-4">
+                {% for message in messages %}
+                <div class=" mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg
           {% if message.tags == 'success' %}
             bg-green-500/10 border-green-400/30 text-green-300
           {% elif message.tags == 'error' %}
@@ -35,21 +36,22 @@
             bg-blue-500/10 border-blue-400/30 text-blue-300
           {% endif %}
         ">
-          {{ message }}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
         </div>
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
- <div class="fixed top-[72px] left-0 w-full hidden justify-center z-[100]" id="deletion_msg_container">
-    <div class="w-full max-w-5xl px-4">
-        <div class=" mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg bg-green-500/10 border-green-400/30 text-green-300" id="deletion_msg">
+        {% endif %}
+        <div class="fixed top-[72px] left-0 w-full hidden justify-center z-[100]" id="deletion_msg_container">
+            <div class="w-full max-w-5xl px-4">
+                <div class=" mb-3 p-4 rounded-xl backdrop-blur-md border text-sm shadow-lg bg-green-500/10 border-green-400/30 text-green-300"
+                    id="deletion_msg">
+                </div>
+            </div>
         </div>
-    </div>
-  </div>
-<!-- SIDEBAR -->
-<aside id="sidebar"
-       class="fixed lg:static z-50
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="fixed lg:static z-50
               w-72 h-full
               bg-[#171717]
               border-r border-[#2d2d2d]
@@ -58,1042 +60,1025 @@
               lg:translate-x-0
               transition-transform duration-200">
 
-    <!-- NEW CHAT -->
-  <div class="p-3">
-    <button id="newChatBtn"
-            class="w-full bg-[#2f2f2f] hover:bg-[#3a3a3a]
+            <!-- NEW CHAT -->
+            <div class="p-3">
+                <button id="newChatBtn" class="w-full bg-[#2f2f2f] hover:bg-[#3a3a3a]
                    rounded-xl py-3 px-4 text-left">
-        + New Chat
-    </button>
-</div>
+                    + New Chat
+                </button>
+            </div>
 
-<!-- New Chat Modal -->
-<div id="newChatModal"
-     class="hidden fixed inset-0 bg-black/50 z-50
+            <!-- New Chat Modal -->
+            <div id="newChatModal" class="hidden fixed inset-0 bg-black/50 z-50
             flex items-center justify-center">
 
-    <div class="bg-[#171717] border border-[#2d2d2d]
+                <div class="bg-[#171717] border border-[#2d2d2d]
                 rounded-2xl p-6 w-full max-w-md mx-4">
 
-        <h2 class="text-xl font-semibold mb-4">
-            Create New Chat
-        </h2>
+                    <h2 class="text-xl font-semibold mb-4">
+                        Create New Chat
+                    </h2>
 
-        <input type="text"
-               id="chatTitle"
-               placeholder="Enter chat title..."
-               class="w-full p-3 rounded-xl
+                    <input type="text" id="chatTitle" placeholder="Enter chat title..." class="w-full p-3 rounded-xl
                       bg-[#2f2f2f] outline-none mb-4">
 
-        <div class="flex justify-end gap-3">
+                    <div class="flex justify-end gap-3">
 
-            <button id="cancelChatBtn"
-                    class="px-4 py-2 rounded-xl bg-[#2f2f2f]">
-                Cancel
-            </button>
+                        <button id="cancelChatBtn" class="px-4 py-2 rounded-xl bg-[#2f2f2f]">
+                            Cancel
+                        </button>
 
-            <button id="createChatBtn"
-                    class="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700">
-                Create
-            </button>
+                        <button id="createChatBtn" class="px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700">
+                            Create
+                        </button>
 
-        </div>
+                    </div>
 
-    </div>
+                </div>
 
-</div>
+            </div>
 
-<!-- chat list -->
- {% if user.is_authenticated %}
- <p class="px-4">Pinned</p>
- {% endif %}
- <br>
- <div id="pinned-chats" class=" overflow-y-auto px-2  min-h-0"></div>
-{% if user.is_authenticated %}
- <p class="ps-4">Recents</p>
- {% endif %}
-
- <div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
- 
-
-    <!-- PROFILE (STAYS FIXED AT BOTTOM) -->
-    <div class="border-t border-[#2d2d2d] p-4 flex items-center gap-3 shrink-0">
-        {% if user.profile_image %}
-          <img src="{{user.profile_image.url}}"
-             class="w-10 h-10 rounded-full">
-
-        {% endif %}
-        {% if not user.profile_image %}
-          <img src="https://via.placeholder.com/40"
-             class="w-10 h-10 rounded-full">
+            <!-- chat list -->
+            {% if user.is_authenticated %}
+            <p class="px-4">Pinned</p>
+            {% endif %}
+            <br>
+            <div id="pinned-chats" class=" overflow-y-auto px-2  min-h-0"></div>
+            {% if user.is_authenticated %}
+            <p class="ps-4">Recents</p>
             {% endif %}
 
-      
+            <div id="chatList" class="flex-1 overflow-y-auto px-2 space-y-1 min-h-0"></div>
 
-        <div>
-            <div class="font-semibold text-sm">
-                {% if user.name %}
-                {{user.name}}
+
+            <!-- PROFILE (STAYS FIXED AT BOTTOM) -->
+            <div class="border-t border-[#2d2d2d] p-4 flex items-center gap-3 shrink-0">
+                {% if user.profile_image %}
+                <img src="{{user.profile_image.url}}" class="w-10 h-10 rounded-full">
+
+                {% endif %}
+                {% if not user.profile_image %}
+                <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full">
                 {% endif %}
 
-                {% if not user.name %}
-                {{ user.email|get_temp_name }}
-                {% endif %}
+
+
+                <div>
+                    <div class="font-semibold text-sm">
+                        {% if user.name %}
+                        {{user.name}}
+                        {% endif %}
+
+                        {% if not user.name %}
+                        {{ user.email|get_temp_name }}
+                        {% endif %}
+                    </div>
+
+                    <div class="text-xs text-gray-400">
+                        Free Plan
+                    </div>
+                </div>
+
             </div>
+        </aside>
+        {% endblock 'sidebar' %}
 
-            <div class="text-xs text-gray-400">
-                Free Plan
-            </div>
-        </div>
-
-    </div>
-</aside>
-{% endblock 'sidebar' %}
-<!-- MAIN AREA -->
-<div class="flex-1 flex flex-col w-full">
+        <!-- MAIN AREA -->
+        <div class="flex-1 flex flex-col w-full">
 
 
-<!-- NAVBAR -->
-<div class="h-14 border-b border-[#2d2d2d]
+            <!-- NAVBAR -->
+            <div class="h-14 border-b border-[#2d2d2d]
             flex items-center justify-between px-4">
 
-    <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3">
 
-        <button id="menuBtn"
-                class="lg:hidden text-xl">
-            ☰
-        </button>
+                    <button id="menuBtn" class="lg:hidden text-xl">
+                        ☰
+                    </button>
 
-        <div class="font-bold">
-            AssistantGPT
-        </div>
+                    <div class="font-bold">
+                        AssistantGPT
+                    </div>
 
-    </div>
+                </div>
 
-    <div class="text-sm text-gray-300 hidden sm:block">
-        Chat Interface
-    </div>
+                <div class="text-sm text-gray-300 hidden sm:block">
+                    Chat Interface
+                </div>
 
-   <div class="text-sm flex items-center gap-3">
+                <div class="text-sm flex items-center gap-3">
 
-    {% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
 
-        <span class="text-gray-300">
-            {{ user.username }}
-        </span>
-      <form id="logoutForm" method="POST" action="{% url 'logout' %}">
-    {% csrf_token %}
+                    <span class="text-gray-300">
+                        {{ user.username }}
+                    </span>
+                    <form id="logoutForm" method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
 
-    <button type="button"
-            id="logoutBtn"
-            class="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600">
-        Logout
-    </button>
-</form>
+                        <button type="button" id="logoutBtn" class="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600">
+                            Logout
+                        </button>
+                    </form>
 
-<!-- Logout Modal -->
-<div id="logoutModal"
-     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <!-- Logout Modal -->
+                    <div id="logoutModal"
+                        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div class="bg-[#171717] border border-[#2d2d2d] rounded-2xl p-6 w-80">
+                        <div class="bg-[#171717] border border-[#2d2d2d] rounded-2xl p-6 w-80">
 
-        <h2 class="text-lg font-semibold mb-2">
-            Confirm Logout
-        </h2>
+                            <h2 class="text-lg font-semibold mb-2">
+                                Confirm Logout
+                            </h2>
 
-        <p class="text-gray-400 mb-6">
-            Are you sure you want to logout?
-        </p>
+                            <p class="text-gray-400 mb-6">
+                                Are you sure you want to logout?
+                            </p>
 
-        <div class="flex justify-end gap-3">
+                            <div class="flex justify-end gap-3">
 
-            <button id="cancelLogout"
-                    class="px-4 py-2 rounded-lg bg-[#2f2f2f] hover:bg-[#3a3a3a]">
-                Cancel
-            </button>
+                                <button id="cancelLogout" class="px-4 py-2 rounded-lg bg-[#2f2f2f] hover:bg-[#3a3a3a]">
+                                    Cancel
+                                </button>
 
-            <button id="confirmLogout"
-                    class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600">
-                Logout
-            </button>
+                                <button id="confirmLogout" class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600">
+                                    Logout
+                                </button>
 
-        </div>
+                            </div>
 
-    </div>
+                        </div>
 
-</div>
-           
-         
-        </form>
+                    </div>
 
-    {% else %}
 
-        <a href="{% url 'login' %}"
-           class="hover:text-green-400">
-            Login
-        </a>
+                    </form>
 
-    {% endif %}
+                    {% else %}
 
-</div>
-</div>
+                    <a href="{% url 'login' %}" class="hover:text-green-400">
+                        Login
+                    </a>
 
-{% block 'mainarea' %}
-<!-- MESSAGES -->
-<div id="messages"
-     class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 w-full">
+                    {% endif %}
 
-    <div class="text-center text-gray-400 mt-20">
-        👋 Ask me anything
-    </div>
+                </div>
+            </div>
 
-</div>
+            {% block 'mainarea' %}.
 
-<!-- INPUT AREA -->
-<div class="p-3 sm:p-4 border-t border-[#2d2d2d]">
+            <!-- MESSAGES -->
+            <div id="messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 w-full">
 
-    <div class="max-w-3xl w-full mx-auto
+                <div class="text-center text-gray-400 mt-20">
+                    👋 Ask me anything
+                </div>
+
+            </div>
+
+            <!-- INPUT AREA -->
+            <div class="p-3 sm:p-4 border-t border-[#2d2d2d]">
+
+                <div class="max-w-3xl w-full mx-auto
                 flex items-end gap-2
                 bg-[#2f2f2f]
                 p-3 rounded-2xl">
 
-        <textarea id="messageInput"
-                  rows="1"
-                  placeholder="Type a message..."
-                  class="flex-1 bg-transparent
+                    <textarea id="messageInput" rows="1" placeholder="Type a message..." class="flex-1 bg-transparent
                          outline-none resize-none
                          max-h-40"></textarea>
 
-        <button id="sendBtn"
-                class="bg-white text-black
+                    <button id="sendBtn" class="bg-white text-black
                        px-4 py-2 rounded-full font-semibold">
-            ↑
-        </button>
+                        ↑
+                    </button>
 
-        <button id="stopBtn"
-                class="hidden bg-red-500
+                    <button id="stopBtn" class="hidden bg-red-500
                        px-4 py-2 rounded-full">
-            Stop
-        </button>
+                        Stop
+                    </button>
 
-    </div>
+                </div>
 
-</div>
-{% endblock 'mainarea' %}
+            </div>
+            {% endblock 'mainarea' %}
 
 
-
-</div>
-
-</div>
-<!-- FOOTER -->
-<footer class="border-t border-[#2d2d2d] bg-[#171717]">
-
-    <div class="max-w-6xl mx-auto px-4 py-3
-                flex flex-col sm:flex-row
-                items-center justify-between
-                text-xs text-gray-400">
-
-        <!-- LEFT -->
-        <p>
-            AssistantGPT © 2026 — Built by Fakhir Masood
-        </p>
-
-        <!-- RIGHT -->
-        <div class="flex gap-4 mt-2 sm:mt-0">
-
-            <a href="#" class="hover:text-white">
-                Privacy
-            </a>
-
-            <a href="#" class="hover:text-white">
-                Terms
-            </a>
-
-            <a href="#" class="hover:text-white">
-                Support
-            </a>
 
         </div>
 
     </div>
 
-</footer>
+    <!-- FOOTER -->
+    <footer class="border-t border-[#2d2d2d] bg-[#171717]">
+
+        <div class="max-w-6xl mx-auto px-4 py-3
+                flex flex-col sm:flex-row
+                items-center justify-between
+                text-xs text-gray-400">
+
+            <!-- LEFT -->
+            <p>
+                AssistantGPT © 2026 — Built by Fakhir Masood
+            </p>
+
+            <!-- RIGHT -->
+            <div class="flex gap-4 mt-2 sm:mt-0">
+
+                <a href="#" class="hover:text-white">
+                    Privacy
+                </a>
+
+                <a href="#" class="hover:text-white">
+                    Terms
+                </a>
+
+                <a href="#" class="hover:text-white">
+                    Support
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
 
 
-<!-- JS -->
-<script>
+    <!-- JS -->
+    <script>
 
-const input = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-const stopBtn = document.getElementById("stopBtn");
-const messages = document.getElementById("messages");
+        const input = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const messages = document.getElementById("messages");
 
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const IS_AUTHENTICATED = {{ user.is_authenticated| yesno: "true,false" }};
 
-let controller = null;
+        let controller = null;
 
-/* IMPORTANT: current active chat */
-let CURRENT_CHAT_ID = null;
+        /* IMPORTANT: current active chat */
+        let CURRENT_CHAT_ID = null;
 
-/* AUTO RESIZER */
-input.addEventListener("input", () => {
+        /* AUTO RESIZER */
+        input.addEventListener("input", () => {
 
-    input.style.height = "auto"; // reset first
+            input.style.height = "auto"; // reset first
 
-    const maxHeight = 160; // optional limit (adjust as you like)
+            const maxHeight = 160; // optional limit (adjust as you like)
 
-    const newHeight = Math.min(input.scrollHeight, maxHeight);
+            const newHeight = Math.min(input.scrollHeight, maxHeight);
 
-    input.style.height = newHeight + "px";
-    
-});
+            input.style.height = newHeight + "px";
+
+        });
 
 
 
-/* MESSAGE RENDER */
-function addMessage(text, type){
+        /* MESSAGE RENDER */
+        function addMessage(text, type) {
 
-    const div = document.createElement("div");
+            const div = document.createElement("div");
 
-    div.className =
-        type === "user"
-        ? "bg-[#2f2f2f] self-end p-3 rounded-2xl max-w-[80%] ml-auto"
-        : "bg-[#1f1f1f] self-start p-3 rounded-2xl max-w-[80%]";
+            div.className =
+                type === "user"
+                    ? "bg-[#2f2f2f] self-end p-3 rounded-2xl max-w-[80%] ml-auto"
+                    : "bg-[#1f1f1f] self-start p-3 rounded-2xl max-w-[80%]";
 
-    div.innerText = text;
+            div.innerText = text;
 
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
 
-    return div;
-}
+            return div;
+        }
 
-async function loadChat(chatId) {
-highlightSelectedChat(chatId);
-CURRENT_CHAT_ID = chatId;
+        async function loadChat(chatId) {
+            highlightSelectedChat(chatId);
+            CURRENT_CHAT_ID = chatId;
 
-window.history.pushState(
-    {},
-    "",
-    `/assistantgpt/chat/${chatId}/`
-);
+            window.history.pushState(
+                {},
+                "",
+                `/assistantgpt/chat/${chatId}/`
+            );
 
-messages.innerHTML = "";
+            messages.innerHTML = "";
 
-try {
+            try {
 
-    let url = "";
+                let url = "";
 
-    // 🔥 LOGIC ADDED: choose endpoint based on login state
-    if (IS_AUTHENTICATED) {
-        url = `/assistantgpt/c/${chatId}/`;
-    } else {
-        url = `/assistantgpt/home/session_chat/`;
-    }
+                // 🔥 LOGIC ADDED: choose endpoint based on login state
+                if (IS_AUTHENTICATED) {
+                    url = `/assistantgpt/c/${chatId}/`;
+                } else {
+                    url = `/assistantgpt/home/session_chat/`;
+                }
 
-    const res = await fetch(url);
-    const data = await res.json();
+                const res = await fetch(url);
+                const data = await res.json();
 
-    if (data && Array.isArray(data.messages)) {
+                if (data && Array.isArray(data.messages)) {
 
-        if (data.messages.length > 0) {
-            data.messages.forEach(m => {
-                addMessage(m.content, m.role);
+                    if (data.messages.length > 0) {
+                        data.messages.forEach(m => {
+                            addMessage(m.content, m.role);
+                        });
+                    } else {
+                        addMessage("Start your conversation 👋", "bot");
+                    }
+
+                } else {
+                    addMessage("How can I assist you!", "bot");
+                }
+
+            } catch (err) {
+                console.error(err);
+                addMessage("Failed to load chat", "bot");
+            }
+        }
+
+        // highlight selected chat logic
+        function highlightSelectedChat(chatId) {
+
+            document.querySelectorAll("[data-chat-id]").forEach(chat => {
+                chat.classList.remove("bg-[#2a2a2a]");
             });
-        } else {
-            addMessage("Start your conversation 👋", "bot");
+
+            const activeChat = document.querySelector(
+                `[data-chat-id="${chatId}"]`
+            );
+
+            if (activeChat) {
+                activeChat.classList.add("bg-[#2a2a2a]");
+            }
         }
 
-    } else {
-        addMessage("How can I assist you!", "bot");
-    }
+        /* SEND MESSAGE */
+        sendBtn.addEventListener("click", async () => {
 
-} catch (err) {
-    console.error(err);
-    addMessage("Failed to load chat", "bot");
-}
-}
+            const text = input.value.trim();
+            if (!text) return;
 
-function highlightSelectedChat(chatId) {
+            if (IS_AUTHENTICATED && !CURRENT_CHAT_ID) {
+                alert("Please create or select a chat first.");
+                return;
+            }
 
-    document.querySelectorAll("[data-chat-id]").forEach(chat => {
-        chat.classList.remove("bg-[#2a2a2a]");
-    });
+            input.style.height = "auto";
 
-    const activeChat = document.querySelector(
-        `[data-chat-id="${chatId}"]`
-    );
+            addMessage(text, "user");
+            input.value = "";
 
-    if (activeChat) {
-        activeChat.classList.add("bg-[#2a2a2a]");
-    }
-}
+            const botMsg = addMessage("Thinking...", "bot");
 
-/* SEND MESSAGE */
-sendBtn.addEventListener("click", async () => {
+            sendBtn.classList.add("hidden");
+            stopBtn.classList.remove("hidden");
 
-    const text = input.value.trim();
-    if (!text) return;
+            controller = new AbortController();
 
-    if (IS_AUTHENTICATED && !CURRENT_CHAT_ID) {
-    alert("Please create or select a chat first.");
-    return;
-}
+            try {
 
-    input.style.height = "auto";
+                const res = await fetch("/assistantgpt/home/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRF()
+                    },
+                    body: JSON.stringify({
+                        message: text,
+                        chat_id: CURRENT_CHAT_ID || null
+                    }),
+                    signal: controller.signal
+                });
 
-    addMessage(text, "user");
-    input.value = "";
+                const data = await res.json();
 
-    const botMsg = addMessage("Thinking...", "bot");
+                botMsg.innerText = data.response;
 
-    sendBtn.classList.add("hidden");
-    stopBtn.classList.remove("hidden");
+            } catch (err) {
 
-    controller = new AbortController();
+                if (err.name === "AbortError") {
+                    botMsg.innerText = "Stopped.";
+                } else {
+                    botMsg.innerText = "Error occurred.";
+                }
 
-    try {
-
-        const res = await fetch("/assistantgpt/home/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF()
-            },
-            body: JSON.stringify({
-                message: text,
-                chat_id: CURRENT_CHAT_ID || null
-            }),
-            signal: controller.signal
+            } finally {
+                sendBtn.classList.remove("hidden");
+                stopBtn.classList.add("hidden");
+            }
         });
 
-        const data = await res.json();
 
-        botMsg.innerText = data.response;
+        /* STOP BUTTON */
+        stopBtn.addEventListener("click", () => {
+            if (controller) controller.abort();
+        });
 
-    } catch (err) {
 
-        if (err.name === "AbortError") {
-            botMsg.innerText = "Stopped.";
-        } else {
-            botMsg.innerText = "Error occurred.";
+        /* CSRF */
+        function getCSRF() {
+            let cookieValue = null;
+
+            document.cookie.split(";").forEach(c => {
+                c = c.trim();
+                if (c.startsWith("csrftoken=")) {
+                    cookieValue = c.substring("csrftoken=".length);
+                }
+            });
+
+            return cookieValue;
         }
 
-    } finally {
-        sendBtn.classList.remove("hidden");
-        stopBtn.classList.add("hidden");
-    }
-});
+        /* MOBILE SIDEBAR */
+        document.getElementById("menuBtn").addEventListener("click", () => {
+            sidebar.classList.remove("-translate-x-full");
+            overlay.classList.remove("hidden");
+        });
 
-/* STOP BUTTON */
-stopBtn.addEventListener("click", () => {
-    if (controller) controller.abort();
-});
+        overlay.addEventListener("click", () => {
+            sidebar.classList.add("-translate-x-full");
+            overlay.classList.add("hidden");
+        });
 
-/* CSRF */
-function getCSRF(){
-    let cookieValue = null;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    document.cookie.split(";").forEach(c => {
-        c = c.trim();
-        if (c.startsWith("csrftoken=")) {
-            cookieValue = c.substring("csrftoken=".length);
-        }
-    });
+        /* LOAD CHATS INTO SIDEBAR */
+        async function loadChats() {
+            if (IS_AUTHENTICATED) {
 
-    return cookieValue;
-}
+                /////////////////////////////////////////////////////////logic for non pinned chats//////////////////////////////////////////        
+                // for non-pinned chats    
+                const res = await fetch("/assistantgpt/chats/");
+                const data = await res.json();
+                const chatList = document.getElementById("chatList");
+                if (!chatList) return;
+                chatList.innerHTML = "";
 
-/* MOBILE SIDEBAR */
-document.getElementById("menuBtn").addEventListener("click", () => {
-    sidebar.classList.remove("-translate-x-full");
-    overlay.classList.remove("hidden");
-});
+                // 🔥 if chats exist and not empty
+                if (data && Array.isArray(data.chats) && data.chats.length > 0) {
+                    data.chats.forEach(c => {
+                        const div = document.createElement("div");
 
-overlay.addEventListener("click", () => {
-    sidebar.classList.add("-translate-x-full");
-    overlay.classList.add("hidden");
-});
+                        div.className =
+                            "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
 
-/* LOAD CHATS INTO SIDEBAR */
-async function loadChats() {
-    if(IS_AUTHENTICATED){
-    const res = await fetch("/assistantgpt/chats/");
-    const res2 = await fetch("/assistantgpt/load_pinned_chats/");
-    const data2 = await res2.json();
-    const data = await res.json();
+                        div.dataset.chatId = c.id;
 
-    const chatList = document.getElementById("chatList");
-    const pinned_chats=document.getElementById('pinned-chats');
-
-    if (!chatList) return;
-    if (!pinned_chats) return;
+                        // Chat title
+                        div.innerText = c.title;
 
 
-    chatList.innerHTML = "";
+                        // Three-dot button
+                        const menuButton = document.createElement("button");
 
-    // 🔥 if chats exist and not empty
-    if (data && Array.isArray(data.chats) && data.chats.length > 0) {
+                        menuButton.className =
+                            "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
 
-        data.chats.forEach(c => {
-
-            const div = document.createElement("div");
-
-div.className =
-    "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
-
-div.dataset.chatId = c.id;
-
-// Chat title
-div.innerText = c.title;
+                        menuButton.innerHTML = `
+            <span class="text-lg leading-none">⋮</span>
+        `;
 
 
-// Three-dot button
-const menuButton = document.createElement("button");
+                        // Dropdown menu
+                        const menu = document.createElement("div");
 
-menuButton.className =
-    "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
-
-menuButton.innerHTML = `
-    <span class="text-lg leading-none">⋮</span>
-`;
+                        menu.className =
+                            "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
 
 
-// Dropdown menu
-const menu = document.createElement("div");
+                        // Pin option
+                        const pinButton = document.createElement("button");
 
-menu.className =
-    "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
+                        pinButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
 
-
-// Pin option
-const pinButton = document.createElement("button");
-
-pinButton.className =
-    "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
-
-pinButton.innerHTML = `
+                        pinButton.innerHTML = `
     📌 <span class="ml-2">Pin</span>
 `;
 
 
-// Delete option
-const deleteButton = document.createElement("button");
+                        // Delete option
+                        const deleteButton = document.createElement("button");
 
-deleteButton.className =
-    "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
+                        deleteButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
 
-deleteButton.innerHTML = `
+                        deleteButton.innerHTML = `
     <span>🗑️</span>
     <span class="ml-2">Delete</span>
 `;
 
 
-// Prevent clicking the menu from loading the chat
-menuButton.onclick = (e) => {
-    e.stopPropagation();
+                        // Prevent clicking the menu from loading the chat
+                        menuButton.onclick = (e) => {
+                            e.stopPropagation();
 
-    menu.classList.toggle("hidden");
-};
-
-
+                            menu.classList.toggle("hidden");
+                        };
 
 
-// Pin
-pinButton.onclick = async(e) => {
-    e.stopPropagation();
-     const chat_to_be_removed_from_normal_chats=document.querySelector(`[data-chat-id="${c.id}"]`);
-     chat_to_be_removed_from_normal_chats.remove()
-    const response =await fetch('/assistantgpt/pin/',{
-        'method':'POST',
-        'headers':{
-            'Content-Type':'applicatin/json',
-            'X-CSRFToken':getCSRF()
-        },
-        body:JSON.stringify({'chat_id':c.id})
-    })
-     const div = document.createElement("div");
-
-div.className =
-    "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
-
-div.dataset.chatId = c.id;
-
-// Chat title
-div.innerText = c.title;
 
 
-// Three-dot button
-const menuButton = document.createElement("button");
+                        // Pin
+                        pinButton.onclick = async (e) => {
+                            e.stopPropagation();
+                            const chat_to_be_removed_from_normal_chats = document.querySelector(`[data-chat-id="${c.id}"]`);
+                            chat_to_be_removed_from_normal_chats.remove()
+                            const response = await fetch('/assistantgpt/pin/', {
+                                'method': 'POST',
+                                'headers': {
+                                    'Content-Type': 'applicatin/json',
+                                    'X-CSRFToken': getCSRF()
+                                },
+                                body: JSON.stringify({ 'chat_id': c.id })
+                            })
 
-menuButton.className =
-    "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
+                            ///////////////////////////logic to add the pinned chat directly to pinned section//////////////////////////////////////
+                            const div = document.createElement("div");
 
-menuButton.innerHTML = `
+                            div.className =
+                                "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
+
+                            div.dataset.chatId = c.id;
+
+                            // Chat title
+                            div.innerText = c.title;
+
+
+                            // Three-dot button
+                            const menuButton = document.createElement("button");
+
+                            menuButton.className =
+                                "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
+
+                            menuButton.innerHTML = `
     <span class="text-lg leading-none">⋮</span>
 `;
 
 
-// Dropdown menu
-const menu = document.createElement("div");
+                            // Dropdown menu
+                            const menu = document.createElement("div");
 
-menu.className =
-    "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
+                            menu.className =
+                                "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
 
 
-// Pin option
-const pinButton = document.createElement("button");
+                            // Pin option
+                            const pinButton = document.createElement("button");
 
-pinButton.className =
-    "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
+                            pinButton.className =
+                                "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
 
-pinButton.innerHTML = `
+                            pinButton.innerHTML = `
     📌 <span class="ml-2">Pin</span>
 `;
 
 
-menu.appendChild(deleteButton);
+                            menu.appendChild(deleteButton);
 
 
-// Put menu + three dots inside chat div
-div.appendChild(menuButton);
-div.appendChild(menu);
-menu.classList.toggle("hidden");
-pinned_chats.appendChild(div);
-menu.addEventListener('mouseleave',()=>{
-    menu.classList.toggle('hidden');
-})
-};
+                            // Put menu + three dots inside chat div
+                            div.appendChild(menuButton);
+                            div.appendChild(menu);
 
-// Delete
-deleteButton.onclick = async(e) => {
-    e.stopPropagation();
+                            pinned_chats.appendChild(div);
+                            menu.addEventListener('mouseleave', () => {
+                                menu.classList.toggle('hidden');
+                            })
+                        };
 
-    menu.classList.toggle("hidden");
-    const response=await fetch('/assistantgpt/delete/',{
-        'method':'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'X-CSRFToken':getCSRF()
-        },
-        body:JSON.stringify({'chat_id':c.id})
-    },
-    
-)
-    if(response.ok){
-        const chat_to_be_removed=document.querySelector(`[data-chat-id="${c.id}"]`);
-        chat_to_be_removed.remove()
-        menu.classList.toggle('hidden');
-        deletion_msg_container=document.getElementById('deletion_msg_container');
-        deletion_message=document.getElementById('deletion_msg');
-        console.log('deleted');
-        deletion_message.innerText='Chat deleted successfully.';
-        deletion_msg_container.classList.remove('hidden');
-        deletion_msg_container.classList.add('flex');
-        setTimeout(
-            ()=>{
-                deletion_msg_container.classList.add('hidden');
-            }
-        ,3000)
-    }
+                        // Delete
+                        deleteButton.onclick = async (e) => {
+                            e.stopPropagation();
 
-    // your delete logic here
-};
+                            menu.classList.toggle("hidden");
+                            const response = await fetch('/assistantgpt/delete/', {
+                                'method': 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRF()
+                                },
+                                body: JSON.stringify({ 'chat_id': c.id })
+                            },
 
+                            )
+                            if (response.ok) {
+                                const chat_to_be_removed = document.querySelector(`[data-chat-id="${c.id}"]`);
+                                chat_to_be_removed.remove()
+                                menu.classList.toggle('hidden');
+                                deletion_msg_container = document.getElementById('deletion_msg_container');
+                                deletion_message = document.getElementById('deletion_msg');
+                                console.log('deleted');
+                                deletion_message.innerText = 'Chat deleted successfully.';
+                                deletion_msg_container.classList.remove('hidden');
+                                deletion_msg_container.classList.add('flex');
+                                setTimeout(
+                                    () => {
+                                        deletion_msg_container.classList.add('hidden');
+                                    }
+                                    , 3000)
+                            }
 
-
+                            // your delete logic here
+                        };
 
 
 
 
-// Put buttons inside menu
-menu.appendChild(pinButton);
-menu.appendChild(deleteButton);
-
-
-// Put menu + three dots inside chat div
-div.appendChild(menuButton);
-div.appendChild(menu);
-
-
-// Load chat when clicking chat item
-div.onclick = () => loadChat(c.id);
-
-chatList.appendChild(div);
-menu.addEventListener('mouseleave',()=>{
-    menu.classList.toggle('hidden');
-    console.log('mouse laeved')
-    }
-)
-
-            
-
-        });
-
-    } else {
-
-        // 🔥 if no chats
-        const empty = document.createElement("div");
-
-        empty.className = "text-gray-500 text-sm px-3 py-2";
-
-        empty.innerText = "Please login to retain chat history.";
-
-        pinned_chats.appendChild(empty);
-    }
-
-      // After creating all chat divs
-    const match = window.location.pathname.match(
-        /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
-    );
-
-    if (match) {
-        highlightSelectedChat(match[1]);
-    }
-
-   //logic for pinned chats
 
 
 
-        // 🔥 if chats exist and not empty
- if (data2 && Array.isArray(data2.chats) && data2.chats.length > 0) {
-
-        data2.chats.forEach(c => {
-
-            const div = document.createElement("div");
-
-div.className =
-    "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
-
-div.dataset.chatId = c.id;
-
-// Chat title
-div.innerText = c.title;
+                        // Put buttons inside menu
+                        menu.appendChild(pinButton);
+                        menu.appendChild(deleteButton);
 
 
-// Three-dot button
-const menuButton = document.createElement("button");
+                        // Put menu + three dots inside chat div
+                        div.appendChild(menuButton);
+                        div.appendChild(menu);
 
-menuButton.className =
-    "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
 
-menuButton.innerHTML = `
+                        // Load chat when clicking chat item
+                        div.onclick = () => loadChat(c.id);
+
+                        chatList.appendChild(div);
+                        menu.addEventListener('mouseleave', () => {
+                            menu.classList.toggle('hidden');
+                            console.log('mouse laeved')
+                        }
+                        )
+
+
+
+                    });
+
+                } else {
+
+                    // 🔥 if no chats
+                    const empty = document.createElement("div");
+
+                    empty.className = "text-gray-500 text-sm px-3 py-2";
+
+                    empty.innerText = "Please login to retain chat history.";
+
+                    pinned_chats.appendChild(empty);
+                }
+
+                // After creating all chat divs
+                const match = window.location.pathname.match(
+                    /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
+                );
+
+                if (match) {
+                    highlightSelectedChat(match[1]);
+                }
+
+
+                ////////////////////////////////////////////////logic for pinned chats/////////////////////////////////////////////////  
+                // for pinned chats
+                const res2 = await fetch("/assistantgpt/load_pinned_chats/");
+                const data2 = await res2.json();
+                const pinned_chats = document.getElementById('pinned-chats');
+                if (!pinned_chats) return;
+
+                // 🔥 if chats exist and not empty
+                if (data2 && Array.isArray(data2.chats) && data2.chats.length > 0) {
+
+                    data2.chats.forEach(c => {
+
+                        const div = document.createElement("div");
+
+                        div.className =
+                            "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
+
+                        div.dataset.chatId = c.id;
+
+                        // Chat title
+                        div.innerText = c.title;
+
+
+                        // Three-dot button
+                        const menuButton = document.createElement("button");
+
+                        menuButton.className =
+                            "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
+
+                        menuButton.innerHTML = `
     <span class="text-lg leading-none">⋮</span>
 `;
 
 
-// Dropdown menu
-const menu = document.createElement("div");
+                        // Dropdown menu
+                        const menu = document.createElement("div");
 
-menu.className =
-    "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
+                        menu.className =
+                            "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
 
 
-// Pin option
-const pinButton = document.createElement("button");
+                        // Pin option
+                        const pinButton = document.createElement("button");
 
-pinButton.className =
-    "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
+                        pinButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
 
-pinButton.innerHTML = `
+                        pinButton.innerHTML = `
     📌 <span class="ml-2">Pin</span>
 `;
 
 
-// Delete option
-const deleteButton = document.createElement("button");
+                        // Delete option
+                        const deleteButton = document.createElement("button");
 
-deleteButton.className =
-    "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
+                        deleteButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
 
-deleteButton.innerHTML = `
+                        deleteButton.innerHTML = `
     <span>🗑️</span>
     <span class="ml-2">Delete</span>
 `;
 
 
-// Prevent clicking the menu from loading the chat
-menuButton.onclick = (e) => {
-    e.stopPropagation();
+                        // Prevent clicking the menu from loading the chat
+                        menuButton.onclick = (e) => {
+                            e.stopPropagation();
 
-    menu.classList.toggle("hidden");
-};
-
-
+                            menu.classList.toggle("hidden");
+                        };
 
 
-// Pin
-pinButton.onclick = async(e) => {
-    e.stopPropagation();
-    menu.classList.toggle("hidden");
-     const chat_to_be_removed_from_normal_chats=document.querySelector(`[data-chat-id="${c.id}"]`);
-     chat_to_be_removed_from_normal_chats.remove()
-    const response =await fetch('/assistantgpt/pin/',{
-        'method':'POST',
-        'headers':{
-            'Content-Type':'applicatin/json',
-            'X-CSRFToken':getCSRF()
-        },
-        body:JSON.stringify({'chat_id':c.id})
-    })
 
-    // your pin logic here
-};
 
-// Delete
-deleteButton.onclick = async(e) => {
-    e.stopPropagation();
+                        // Pin
+                        pinButton.onclick = async (e) => {
+                            e.stopPropagation();
+                            menu.classList.toggle("hidden");
+                            const chat_to_be_removed_from_normal_chats = document.querySelector(`[data-chat-id="${c.id}"]`);
+                            chat_to_be_removed_from_normal_chats.remove()
+                            const response = await fetch('/assistantgpt/pin/', {
+                                'method': 'POST',
+                                'headers': {
+                                    'Content-Type': 'applicatin/json',
+                                    'X-CSRFToken': getCSRF()
+                                },
+                                body: JSON.stringify({ 'chat_id': c.id })
+                            })
 
-    menu.classList.toggle("hidden");
-    const response=await fetch('/assistantgpt/delete/',{
-        'method':'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'X-CSRFToken':getCSRF()
-        },
-        body:JSON.stringify({'chat_id':c.id})
-    },
-    
-)
-    if(response.ok){
-        const chat_to_be_removed=document.querySelector(`[data-chat-id="${c.id}"]`);
-        chat_to_be_removed.remove()
-        menu.classList.toggle('hidden');
-        deletion_msg_container=document.getElementById('deletion_msg_container');
-        deletion_message=document.getElementById('deletion_msg');
-        console.log('deleted');
-        deletion_message.innerText='Chat deleted successfully.';
-        deletion_msg_container.classList.remove('hidden');
-        deletion_msg_container.classList.add('flex');
-        setTimeout(
-            ()=>{
-                deletion_msg_container.classList.add('hidden');
+                            // your pin logic here
+                        };
+
+                        // Delete
+                        deleteButton.onclick = async (e) => {
+                            e.stopPropagation();
+
+                            menu.classList.toggle("hidden");
+                            const response = await fetch('/assistantgpt/delete/', {
+                                'method': 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRF()
+                                },
+                                body: JSON.stringify({ 'chat_id': c.id })
+                            },
+
+                            )
+                            if (response.ok) {
+                                const chat_to_be_removed = document.querySelector(`[data-chat-id="${c.id}"]`);
+                                chat_to_be_removed.remove()
+                                menu.classList.toggle('hidden');
+                                deletion_msg_container = document.getElementById('deletion_msg_container');
+                                deletion_message = document.getElementById('deletion_msg');
+                                console.log('deleted');
+                                deletion_message.innerText = 'Chat deleted successfully.';
+                                deletion_msg_container.classList.remove('hidden');
+                                deletion_msg_container.classList.add('flex');
+                                setTimeout(
+                                    () => {
+                                        deletion_msg_container.classList.add('hidden');
+                                    }
+                                    , 3000)
+                            }
+
+                            // your delete logic here
+                        };
+
+                        // Put buttons inside menu
+                        menu.appendChild(pinButton);
+                        menu.appendChild(deleteButton);
+
+
+                        // Put menu + three dots inside chat div
+                        div.appendChild(menuButton);
+                        div.appendChild(menu);
+
+
+                        // Load chat when clicking chat item
+                        div.onclick = () => loadChat(c.id);
+
+                        pinned_chats.appendChild(div);
+                        menu.addEventListener('mouseleave', () => {
+                            menu.classList.toggle('hidden');
+                            console.log('mouse laeved')
+                        }
+                        )
+
+
+
+                    });
+
+                } else {
+
+                    // 🔥 if no chats
+                    const empty2 = document.createElement("div");
+
+                    empty2.className = "text-gray-500 text-sm px-3 py-2";
+
+                    empty2.innerText = "No pinned chats.";
+
+                    pinned_chats.appendChild(empty2);
+                }
+
+                // After creating all chat divs
+                const match2 = window.location.pathname.match(
+                    /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
+                );
+
+                if (match2) {
+                    highlightSelectedChat(match[1]);
+                }
             }
-        ,3000)
-    }
 
-    // your delete logic here
-};
+        }
 
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /* CREATE NEW CHAT */
+        async function newChat() {
+
+            const res = await fetch("/chat/create/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRF()
+                }
+            });
+
+            const data = await res.json();
+
+            await loadChats();
+            loadChat(data.chat_id);
+
+        }
+
+        /* INIT */
+        loadChats();
+
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        const logoutModal = document.getElementById("logoutModal");
+        const cancelLogout = document.getElementById("cancelLogout");
+        const confirmLogout = document.getElementById("confirmLogout");
+        const logoutForm = document.getElementById("logoutForm");
 
 
 
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                logoutModal.classList.remove("hidden");
+            });
+        }
+
+        if (cancelLogout && logoutModal) {
+            cancelLogout.addEventListener("click", () => {
+                logoutModal.classList.add("hidden");
+            });
+        }
+
+        if (confirmLogout && logoutForm) {
+            confirmLogout.addEventListener("click", () => {
+                logoutForm.submit();
+            });
+        }
+
+        // Close modal when clicking outside
+        if (logoutModal) {
+            logoutModal.addEventListener("click", (e) => {
+                if (e.target === logoutModal) {
+                    logoutModal.classList.add("hidden");
+                }
+            });
+        }
 
 
-// Put buttons inside menu
-menu.appendChild(pinButton);
-menu.appendChild(deleteButton);
+
+        const newChatBtn = document.getElementById("newChatBtn");
+        const newChatModal = document.getElementById("newChatModal");
+        const cancelChatBtn = document.getElementById("cancelChatBtn");
+        const createChatBtn = document.getElementById("createChatBtn");
+        const chatTitleInput = document.getElementById("chatTitle");
+
+        /* OPEN MODAL */
+        newChatBtn.addEventListener("click", () => {
+
+            if (!IS_AUTHENTICATED) {
+                alert("Please login first.");
+                return;
+            }
+
+            newChatModal.classList.remove("hidden");
+        });
 
 
-// Put menu + three dots inside chat div
-div.appendChild(menuButton);
-div.appendChild(menu);
+        /* CLOSE MODAL */
+        cancelChatBtn.addEventListener("click", () => {
+            newChatModal.classList.add("hidden");
+            chatTitleInput.value = "";
+        });
 
+        /* CREATE CHAT */
+        createChatBtn.addEventListener("click", async () => {
 
-// Load chat when clicking chat item
-div.onclick = () => loadChat(c.id);
+            const title = chatTitleInput.value.trim();
 
-pinned_chats.appendChild(div);
-menu.addEventListener('mouseleave',()=>{
-    menu.classList.toggle('hidden');
-    console.log('mouse laeved')
-    }
-)
+            if (!title) {
+                alert("Please enter a chat title.");
+                return;
+            }
 
-            
+            try {
+
+                const res = await fetch("/assistantgpt/create_chat/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRF()
+                    },
+                    body: JSON.stringify({
+                        title: title
+                    })
+                });
+
+                const data = await res.json();
+
+                /* ❗ IMPORTANT ERROR HANDLING */
+                if (!res.ok) {
+                    alert(data.error || "Something went wrong");
+                    return;
+                }
+
+                newChatModal.classList.add("hidden");
+                chatTitleInput.value = "";
+
+                await loadChats();
+
+                loadChat(data.chat_id);
+
+            } catch (err) {
+                console.error(err);
+                alert("Network error or server down.");
+            }
+        });
+
+        /* CLOSE WHEN CLICKING OUTSIDE */
+        newChatModal.addEventListener("click", (e) => {
+
+            if (e.target === newChatModal) {
+                newChatModal.classList.add("hidden");
+                chatTitleInput.value = "";
+            }
 
         });
 
-    } else {
+        window.addEventListener("DOMContentLoaded", () => {
 
-        // 🔥 if no chats
-        const empty2 = document.createElement("div");
+            if (!IS_AUTHENTICATED) {
+                loadChat();
+                return;
+            }
 
-        empty2.className = "text-gray-500 text-sm px-3 py-2";
+            const match = window.location.pathname.match(
+                /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
+            );
 
-        empty2.innerText = "No pinned chats.";
+            if (match) {
+                loadChat(match[1]);
+            }
 
-        pinned_chats.appendChild(empty2);
-    }
-
-      // After creating all chat divs
-    const match2 = window.location.pathname.match(
-        /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
-    );
-
-    if (match2) {
-        highlightSelectedChat(match[1]);
-    }
-}
-    
-}
-
-
-/* CREATE NEW CHAT */
-async function newChat(){
-
-    const res = await fetch("/chat/create/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCSRF()
-        }
-    });
-
-    const data = await res.json();
-
-    await loadChats();
-    loadChat(data.chat_id);
-
-}
-
-/* INIT */
-loadChats();
-
-
-const logoutBtn = document.getElementById("logoutBtn");
-const logoutModal = document.getElementById("logoutModal");
-const cancelLogout = document.getElementById("cancelLogout");
-const confirmLogout = document.getElementById("confirmLogout");
-const logoutForm = document.getElementById("logoutForm");
-
-
-
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-        logoutModal.classList.remove("hidden");
-    });
-}
-
-if (cancelLogout && logoutModal) {
-    cancelLogout.addEventListener("click", () => {
-        logoutModal.classList.add("hidden");
-    });
-}
-
-if (confirmLogout && logoutForm) {
-    confirmLogout.addEventListener("click", () => {
-        logoutForm.submit();
-    });
-}
-
-// Close modal when clicking outside
-if (logoutModal) {
-    logoutModal.addEventListener("click", (e) => {
-        if (e.target === logoutModal) {
-            logoutModal.classList.add("hidden");
-        }
-    });
-}
-
-
-
-const newChatBtn = document.getElementById("newChatBtn");
-const newChatModal = document.getElementById("newChatModal");
-const cancelChatBtn = document.getElementById("cancelChatBtn");
-const createChatBtn = document.getElementById("createChatBtn");
-const chatTitleInput = document.getElementById("chatTitle");
-
-/* OPEN MODAL */
-newChatBtn.addEventListener("click", () => {
-
-    if (!IS_AUTHENTICATED) {
-        alert("Please login first.");
-        return;
-    }
-
-    newChatModal.classList.remove("hidden");
-});
-
-
-/* CLOSE MODAL */
-cancelChatBtn.addEventListener("click", () => {
-    newChatModal.classList.add("hidden");
-    chatTitleInput.value = "";
-});
-
-/* CREATE CHAT */
-createChatBtn.addEventListener("click", async () => {
-
-    const title = chatTitleInput.value.trim();
-
-    if (!title) {
-        alert("Please enter a chat title.");
-        return;
-    }
-
-    try {
-
-        const res = await fetch("/assistantgpt/create_chat/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF()
-            },
-            body: JSON.stringify({
-                title: title
-            })
         });
 
-        const data = await res.json();
 
-        /* ❗ IMPORTANT ERROR HANDLING */
-        if (!res.ok) {
-            alert(data.error || "Something went wrong");
-            return;
-        }
-
-        newChatModal.classList.add("hidden");
-        chatTitleInput.value = "";
-
-        await loadChats();
-
-        loadChat(data.chat_id);
-
-    } catch (err) {
-        console.error(err);
-        alert("Network error or server down.");
-    }
-});
-
-/* CLOSE WHEN CLICKING OUTSIDE */
-newChatModal.addEventListener("click", (e) => {
-
-    if (e.target === newChatModal) {
-        newChatModal.classList.add("hidden");
-        chatTitleInput.value = "";
-    }
-
-});
-
-window.addEventListener("DOMContentLoaded", () => {
-
-    if (!IS_AUTHENTICATED) {
-        loadChat();
-        return;
-    }
-
-    const match = window.location.pathname.match(
-        /\/assistantgpt\/chat\/([0-9a-fA-F-]+)\//
-    );
-
-    if (match) {
-        loadChat(match[1]);
-    }
-
-});
-
-
-setTimeout(() => {
-    const message=document.getElementById('message');
-    if(message){
-        message.remove();
-    }
-}, 3000);
-</script>
-{% endblock 'content' %}
+        setTimeout(() => {
+            const message = document.getElementById('message');
+            if (message) {
+                message.remove();
+            }
+        }, 3000);
+    </script>
+    {% endblock 'content' %}
 </body>
+
 </html>
