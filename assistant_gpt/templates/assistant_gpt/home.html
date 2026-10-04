@@ -315,7 +315,7 @@
 
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("overlay");
-        const IS_AUTHENTICATED = {{ user.is_authenticated| yesno: "true,false" }};
+        const IS_AUTHENTICATED = {{user.is_authenticated|yesno:"true,false"}};
 
         let controller = null;
 
@@ -599,6 +599,8 @@
                             })
 
                             ///////////////////////////logic to add the pinned chat directly to pinned section//////////////////////////////////////
+                             
+
                             const div = document.createElement("div");
 
                             div.className =
@@ -636,11 +638,31 @@
 
                             pinButton.innerHTML = `
     📌 <span class="ml-2">Pin</span>
-`;
+`;                          
+                            const unPinButton = document.createElement("button");
 
+                        unPinButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
 
+                        unPinButton.innerHTML = `📌 <span class="ml-2">Pin</span>`
+
+                            menu.appendChild(unPinButton);
                             menu.appendChild(deleteButton);
+                            unPinButton.addEventListener(async()=>{
+                            const response=await fetch('/assistantgpt/unpin/',{
+                                'method':'POST',
+                                'headers':{
+                                    'Content-Type':'application/json',
+                                    'X-CSRFToken':getCSRF()
 
+                                },
+                                 body:JSON.stringify({'chat_id':c.id})
+                            })
+                            if(response.ok){
+                            const chat_to_be_removed_from_pinned_chats = document.querySelector(`[data-chat-id="${c.id}"]`);
+                            chat_to_be_removed_from_pinned_chats.remove()
+                            }
+                        })
 
                             // Put menu + three dots inside chat div
                             div.appendChild(menuButton);
@@ -651,7 +673,7 @@
                                 menu.classList.toggle('hidden');
                             })
                         };
-
+                        
                         // Delete
                         deleteButton.onclick = async (e) => {
                             e.stopPropagation();

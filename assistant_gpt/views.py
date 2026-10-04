@@ -320,4 +320,14 @@ def load_pinned_chats(request):
     data={"chats":chats}
     return JsonResponse(data)
 
+def un_pin_chat(request):
+    data=json.loads(request.body)
+    chat_id=data['chat_id']
+    print('id')
+    print(chat_id)
+    chat_to_be_unpinned=Chat.objects.filter(id=chat_id).first()
+    chat_to_be_unpinned.is_pinned=False
+    chat_to_be_unpinned.save()
+    return JsonResponse({'status':'ok'})
+
 

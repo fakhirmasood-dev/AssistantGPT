@@ -1,5 +1,5 @@
 from django.urls import path
-from assistant_gpt.views import home,login,register,activate_account,loginview,create_chat,chats,load_chat,url_chat,session_chat,delete_chat,pin_chat,load_pinned_chats
+from assistant_gpt.views import home,login,register,activate_account,loginview,create_chat,chats,load_chat,url_chat,session_chat,delete_chat,pin_chat,load_pinned_chats,un_pin_chat
 from django.contrib.auth.views import LogoutView
 
 urlpatterns=[
@@ -15,5 +15,6 @@ urlpatterns=[
     path('home/session_chat/',session_chat,name='session_chat'),
     path('delete/',delete_chat,name='delete_chat'),
     path('pin/',pin_chat,name='pin_chat'),
-    path('load_pinned_chats/',load_pinned_chats,name='load_pinned_chats')
+    path('load_pinned_chats/',load_pinned_chats,name='load_pinned_chats'),
+    path('unpin/',un_pin_chat,name='unpin')
 ]
