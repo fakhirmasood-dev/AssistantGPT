@@ -746,9 +746,9 @@
 
                     empty.className = "text-gray-500 text-sm px-3 py-2";
 
-                    empty.innerText = "Please login to retain chat history.";
+                    empty.innerText = "No chats.";
 
-                    pinned_chats.appendChild(empty);
+                    chatList.appendChild(empty);
                 }
 
                 // After creating all chat divs
@@ -803,13 +803,13 @@
 
 
                         // Pin option
-                        const pinButton = document.createElement("button");
+                        const unPinButton = document.createElement("button");
 
-                        pinButton.className =
+                        unPinButton.className =
                             "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
 
-                        pinButton.innerHTML = `
-    📌 <span class="ml-2">Pin</span>
+                        unPinButton.innerHTML = `
+     <span class="ml-2">Unpin</span>
 `;
 
 
@@ -835,10 +835,97 @@
 
 
 
-                        // Pin
-                        pinButton.onclick = async (e) => {
+                        
+
+                        // Put buttons inside menu
+                        menu.appendChild(unPinButton);
+                        menu.appendChild(deleteButton);
+
+
+                        // Put menu + three dots inside chat div
+                        div.appendChild(menuButton);
+                        div.appendChild(menu);
+
+
+                        // Load chat when clicking chat item
+                        div.onclick = () => loadChat(c.id);
+
+                        pinned_chats.appendChild(div);
+                        menu.addEventListener('mouseleave', () => {
+                            menu.classList.toggle('hidden');
+                            console.log('mouse laeved')
+                        }
+                        )
+
+                        // unPin
+                        unPinButton.onclick = async (e) => {
                             e.stopPropagation();
                             menu.classList.toggle("hidden");
+                            
+                            const response = await fetch('/assistantgpt/unpin/', {
+                                'method': 'POST',
+                                'headers': {
+                                    'Content-Type': 'applicatin/json',
+                                    'X-CSRFToken': getCSRF()
+                                },
+                                body: JSON.stringify({ 'chat_id': c.id })
+                            });
+                            if(response.ok){
+                                const chat_to_be_removed_from_pinned_chats = document.querySelector(`[data-chat-id="${c.id}"]`);
+                                chat_to_be_removed_from_pinned_chats.remove()
+
+                                const div = document.createElement("div");
+
+                        div.className =
+                            "group relative px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors hover:bg-[#2a2a2a]";
+
+                        div.dataset.chatId = c.id;
+
+                        // Chat title
+                        div.innerText = c.title;
+                                const menuButton = document.createElement("button");
+
+                        menuButton.className =
+                            "absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#3a3a3a] text-gray-400 hover:text-white";
+
+                        menuButton.innerHTML = `
+    <span class="text-lg leading-none">⋮</span>
+`;
+
+
+                        // Dropdown menu
+                        const menu = document.createElement("div");
+
+                        menu.className =
+                            "absolute right-2 top-10 hidden w-32 bg-[#202020] border border-[#333] rounded-lg shadow-lg z-50 py-1";
+                                const pinButton = document.createElement("button");
+
+                        pinButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-[#2a2a2a]";
+
+                        pinButton.innerHTML = `
+     <span class="ml-2">Pin</span>
+`;
+
+
+                        // Delete option
+                        const deleteButton = document.createElement("button");
+
+                        deleteButton.className =
+                            "w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[#2a2a2a]";
+
+                        deleteButton.innerHTML = `
+    <span>🗑️</span>
+    <span class="ml-2">Delete</span>
+`;
+
+                                menu.append(pinButton);
+                                menu.append(deleteButton);
+                                div.append(menuButton);
+                                div.append(menu);
+                                chatList.appendChild(div);
+                                pinButton.onclick = async (e) => {
+                            e.stopPropagation();
                             const chat_to_be_removed_from_normal_chats = document.querySelector(`[data-chat-id="${c.id}"]`);
                             chat_to_be_removed_from_normal_chats.remove()
                             const response = await fetch('/assistantgpt/pin/', {
@@ -848,7 +935,18 @@
                                     'X-CSRFToken': getCSRF()
                                 },
                                 body: JSON.stringify({ 'chat_id': c.id })
-                            })
+                            })}
+                                div.onclick = () => loadChat(c.id);
+                                menuButton.addEventListener('click',()=>{
+                                    menu.classList.toggle('hidden');
+                                })
+                        menu.addEventListener('mouseleave', () => {
+                            menu.classList.toggle('hidden');
+                            console.log('mouse laeved')
+                        })
+                                
+                            }
+                            
 
                             // your pin logic here
                         };
@@ -888,25 +986,7 @@
                             // your delete logic here
                         };
 
-                        // Put buttons inside menu
-                        menu.appendChild(pinButton);
-                        menu.appendChild(deleteButton);
-
-
-                        // Put menu + three dots inside chat div
-                        div.appendChild(menuButton);
-                        div.appendChild(menu);
-
-
-                        // Load chat when clicking chat item
-                        div.onclick = () => loadChat(c.id);
-
-                        pinned_chats.appendChild(div);
-                        menu.addEventListener('mouseleave', () => {
-                            menu.classList.toggle('hidden');
-                            console.log('mouse laeved')
-                        }
-                        )
+                         
 
 
 
